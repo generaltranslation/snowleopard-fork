@@ -21,6 +21,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { SaveState } from '@/lib/editor/save-plugin';
 import type { User } from '@/lib/auth';
 import { PublishSettingsMenu } from '@/components/publish-settings-menu';
+import { T, useGT } from 'gt-next';
 
 const Editor = dynamic(() => import('@/components/document/text-editor').then(mod => mod.Editor), {
   ssr: false,
@@ -68,6 +69,7 @@ export function AlwaysVisibleArtifact({
   user
 }: AlwaysVisibleArtifactProps) {
   const router = useRouter();
+  const t = useGT();
   const { artifact, setArtifact, metadata, setMetadata } = useArtifact();
   const { documentId: contextDocumentId } = useDocumentContext();
   const {
@@ -125,7 +127,7 @@ export function AlwaysVisibleArtifact({
             const initData: SettableArtifact = {
                 ...defaultArtifactProps,
                 documentId: 'init',
-                title: 'Document',
+                title: t('Document'),
                 content: '',
                 kind: 'text' as ArtifactKind,
                 status: 'idle'
@@ -204,7 +206,7 @@ export function AlwaysVisibleArtifact({
       try {
         await renameDocument(trimmedNewTitle);
       } catch (error) {
-        toast.error("Failed to rename document.");
+        toast.error(t("Failed to rename document."));
         setDocuments(originalDocuments);
         console.error("Rename failed:", error);
       } finally {
@@ -259,7 +261,7 @@ export function AlwaysVisibleArtifact({
     if (isCreatingDocument) return;
     try {
       await createDocument({
-        title: 'Untitled Document',
+        title: t('Untitled Document'),
         content: '',
         kind: 'text',
         chatId: null,
@@ -268,7 +270,7 @@ export function AlwaysVisibleArtifact({
       });
     } catch (error) {
       console.error('Error creating document with specific ID:', error);
-      toast.error('Failed to create document');
+      toast.error(t('Failed to create document'));
     }
   }, [isCreatingDocument, createDocument]);
 
@@ -277,7 +279,7 @@ export function AlwaysVisibleArtifact({
       const newDocId = generateUUID();
       try {
           await createDocument({
-              title: 'Untitled Document',
+              title: t('Untitled Document'),
               content: initialContent,
               kind: 'text',
               chatId: null,
@@ -286,7 +288,7 @@ export function AlwaysVisibleArtifact({
           });
       } catch (error) {
           console.error('Error creating document from editor:', error);
-          toast.error('Failed to create document');
+          toast.error(t('Failed to create document'));
       }
   }, [isCreatingDocument, initialDocumentId, createDocument]);
 
@@ -314,15 +316,21 @@ export function AlwaysVisibleArtifact({
          <div className="flex flex-row justify-between items-center border-b px-3 h-[45px]">
            <div className="flex flex-row gap-2 items-center min-w-0">
              <SidebarTrigger />
-             <div className="font-medium truncate h-6 leading-6 px-1">Document Not Found</div>
+             <T>
+               <div className="font-medium truncate h-6 leading-6 px-1">Document Not Found</div>
+             </T>
            </div>
          </div>
          <div className="flex flex-col justify-center items-center h-full gap-4 text-muted-foreground">
             <FileText className="size-16 opacity-50" />
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-1">Create New Document?</h3>
-              <p className="text-sm mb-1">Document ID <code className="text-xs bg-muted p-1 rounded">{showCreateDocumentForId}</code> not found.</p>
-              <p className="text-sm mb-4">Would you like to create it?</p>
+              <T>
+                <h3 className="text-lg font-medium mb-1">Create New Document?</h3>
+              </T>
+              <p className="text-sm mb-1">{t("Document ID {documentId} not found.", { documentId: showCreateDocumentForId })}</p>
+              <T>
+                <p className="text-sm mb-4">Would you like to create it?</p>
+              </T>
             </div>
             <div className="flex gap-3">
               <Button
@@ -334,14 +342,14 @@ export function AlwaysVisibleArtifact({
                 {isCreatingDocument ?
                   <Loader2 className="h-4 w-4 animate-spin" /> :
                   <PlusIcon className="h-4 w-4" />}
-                Create Document
+                <T>Create Document</T>
               </Button>
               <Button
                 variant="outline"
                 className="gap-2"
                 onClick={() => router.push('/documents')}
               >
-                Cancel
+                <T>Cancel</T>
               </Button>
             </div>
          </div>
@@ -371,16 +379,16 @@ export function AlwaysVisibleArtifact({
                     }}
                     onBlur={handleSaveTitle}
                     disabled={isRenamingDocument || !latestDocument}
-                    aria-label="Edit document title"
+                    aria-label={t("Edit document title")}
                   />
                 ) : (
                   <div
                     className={`font-medium truncate h-6 leading-6 px-1 ${latestDocument ? 'cursor-pointer hover:underline' : 'text-muted-foreground'}`}
                     onClick={latestDocument ? handleEditTitle : undefined}
                     onDoubleClick={latestDocument ? handleEditTitle : undefined}
-                    title={latestDocument ? `Rename "${latestDocument.title}"` : (initialDocumentId === 'init' ? 'Untitled Document' : 'Loading...')}
+                    title={latestDocument ? t('Rename "{title}"', { title: latestDocument.title }) : (initialDocumentId === 'init' ? t('Untitled Document') : t('Loading...'))}
                   >
-                    {latestDocument?.title ?? artifact.title ?? 'Document'}
+                    {latestDocument?.title ?? artifact.title ?? t('Document')}
                   </div>
                 )}
               </div>

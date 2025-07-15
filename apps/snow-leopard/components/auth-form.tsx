@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { LogoGoogle, GitIcon, LoaderIcon } from '@/components/icons';
 import type { ReactNode } from 'react';
+import { T, useGT } from 'gt-next';
 
 interface AuthFormProps {
   action: (formData: FormData) => void;
@@ -31,27 +32,28 @@ export function AuthForm({
 }: AuthFormProps) {
   const anySocialEnabled = googleEnabled || githubEnabled;
   const isLoading = !!isSocialLoading || isEmailLoading;
+  const t = useGT();
 
   return (
     <form action={action} className="flex flex-col gap-6 px-4 sm:px-16">
       <div className="flex flex-col gap-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email"><T>Email</T></Label>
         <Input
           id="email"
           name="email"
           type="email"
-          placeholder="you@example.com"
+          placeholder={t('you@example.com')}
           defaultValue={defaultEmail}
           required
         />
       </div>
       <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password"><T>Password</T></Label>
         <Input
           id="password"
           name="password"
           type="password"
-          placeholder="••••••••"
+          placeholder={t('••••••••')}
           required
         />
       </div>
@@ -65,7 +67,7 @@ export function AuthForm({
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
+                <T>Or continue with</T>
               </span>
             </div>
           </div>
@@ -79,7 +81,7 @@ export function AuthForm({
                 onClick={() => onSocialLogin('google')}
                 disabled={isLoading}
               >
-                {isSocialLoading === 'google' ? (<span className="mr-2 h-4 w-4"><LoaderIcon size={16} /></span>) : (<span className="mr-2 h-4 w-4"><LogoGoogle size={16} /></span>)} Google
+                {isSocialLoading === 'google' ? (<span className="mr-2 h-4 w-4"><LoaderIcon size={16} /></span>) : (<span className="mr-2 h-4 w-4"><LogoGoogle size={16} /></span>)} <T>Google</T>
               </Button>
             )}
             {githubEnabled && (
@@ -90,7 +92,7 @@ export function AuthForm({
                 onClick={() => onSocialLogin('github')}
                 disabled={isLoading}
               >
-                {isSocialLoading === 'github' ? (<span className="mr-2 h-4 w-4"><LoaderIcon size={16} /></span>) : (<span className="mr-2 h-4 w-4"><GitIcon /></span>)} GitHub
+                {isSocialLoading === 'github' ? (<span className="mr-2 h-4 w-4"><LoaderIcon size={16} /></span>) : (<span className="mr-2 h-4 w-4"><GitIcon /></span>)} <T>GitHub</T>
               </Button>
             )}
           </div>

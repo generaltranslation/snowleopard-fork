@@ -1,0 +1,15 @@
+{
+  "projectId": "prj_j0swtvhnvdh7zptfh657xas6",
+  "locales": [
+    "en-US",
+    "fr"
+  ],
+  "defaultLocale": "en-US",
+  "files": {
+    "gt": {
+      "output": "public/_gt/[locale].json"
+    }
+  },
+  "framework": "next-app",
+  "_versionId": "f7e9099b036a22a788be5b64f67a50eebb189aa36990da135ae7cb3189a877bf"
+}

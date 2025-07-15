@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchDocuments } from '../document/actions/search';
+import { getGT } from 'gt-next/server';
 
 export async function GET(request: NextRequest) {
+  const t = await getGT();
+  
   try {
     // Extract query parameter
     const searchParams = request.nextUrl.searchParams;
@@ -31,13 +34,13 @@ export async function GET(request: NextRequest) {
     // Handle different error types
     if (error instanceof Error && error.message === 'Unauthorized') {
       return NextResponse.json(
-        { error: 'Unauthorized', results: [] }, 
+        { error: t('Unauthorized'), results: [] }, 
         { status: 401 }
       );
     }
     
     return NextResponse.json(
-      { error: 'Search failed', results: [] }, 
+      { error: t('Search failed'), results: [] }, 
       { status: 500 }
     );
   }

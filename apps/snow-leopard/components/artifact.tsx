@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { Input } from './ui/input';
 import { useDocumentUtils } from '@/hooks/use-document-utils';
 import { Pencil as PencilIcon, X as XIcon } from 'lucide-react';
+import { useGT } from 'gt-next';
 
 export const artifactDefinitions = [
   textArtifact,
@@ -240,7 +241,7 @@ export function PureArtifact({
       setSaveState('error');
       setLastSaveError(error instanceof Error ? error.message : 'Unknown error occurred');
       consecutiveErrorsRef.current++;
-      toast.error('Failed to save document. Please try again.');
+      toast.error(t('Failed to save document. Please try again.'));
     }
   }, [artifact?.documentId, artifact?.title, artifact?.kind, mutateDocuments, createDocument, chatId]);
 
@@ -293,6 +294,7 @@ export function PureArtifact({
 
   const { width: windowWidth, height: windowHeight } = useWindowSize();
   const isMobile = windowWidth ? windowWidth < 768 : false;
+  const t = useGT();
 
   const artifactDefinition = artifactDefinitions.find(
     (definition) => definition.kind === artifact.kind,
@@ -322,7 +324,7 @@ export function PureArtifact({
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
-          <span>Saving</span>
+          <span>{t('Saving')}</span>
         </>
       );
     }
@@ -330,7 +332,7 @@ export function PureArtifact({
     if (saveState === 'error') {
       return (
         <span className="text-destructive" title={lastSaveError || undefined}>
-          Save failed - Click to retry
+          {t('Save failed - Click to retry')}
         </span>
       );
     }

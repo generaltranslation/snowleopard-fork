@@ -12,6 +12,7 @@ import { getDocumentTimestampByIndex } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useArtifact } from '@/hooks/use-artifact';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useGT, T } from 'gt-next';
 
 interface VersionHeaderProps {
   handleVersionChange: (type: 'next' | 'prev' | 'toggle' | 'latest') => void;
@@ -24,13 +25,14 @@ export const VersionHeader = ({
   documents,
   currentVersionIndex,
 }: VersionHeaderProps) => {
+  const t = useGT();
   const { artifact, setArtifact } = useArtifact();
   const { mutate } = useSWRConfig();
   const [isMutating, setIsMutating] = useState(false);
   
   const handleRestoreVersion = useCallback(async () => {
     if (!documents || currentVersionIndex < 0 || currentVersionIndex >= documents.length) {
-      toast.error('Invalid version selected');
+      toast.error(t('Invalid version selected'));
       return;
     }
 
@@ -75,20 +77,20 @@ export const VersionHeader = ({
       });
       window.dispatchEvent(event);
       
-      toast.success('Version restored successfully');
+      toast.success(t('Version restored successfully'));
     } catch (error) {
       console.error('[Version] Error restoring version:', error);
-      toast.error('Failed to restore version');
+      toast.error(t('Failed to restore version'));
     } finally {
       setIsMutating(false);
     }
-  }, [documents, currentVersionIndex, artifact.documentId, setArtifact, handleVersionChange, mutate]);
+  }, [documents, currentVersionIndex, artifact.documentId, setArtifact, handleVersionChange, mutate, t]);
   
   if (!documents || documents.length === 0) return null;
 
   const formatVersionLabel = (date: Date) => {
-    if (isToday(date)) return "Today";
-    if (isYesterday(date)) return "Yesterday";
+    if (isToday(date)) return t("Today");
+    if (isYesterday(date)) return t("Yesterday");
     
     const days = differenceInDays(new Date(), date);
     if (days < 7) return format(date, 'EEE');
@@ -150,11 +152,11 @@ export const VersionHeader = ({
                     ) : (
                       <RotateCcw className="h-3 w-3" />
                     )}
-                    <span>Restore</span>
+                    <T><span>Restore</span></T>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="text-xs">
-                  Make this version the current version
+                  <T>Make this version the current version</T>
                 </TooltipContent>
               </Tooltip>
               
@@ -164,7 +166,7 @@ export const VersionHeader = ({
                 className="text-xs h-7 px-2.5"
                 onClick={() => handleVersionChange('latest')}
               >
-                Exit History
+                <T>Exit History</T>
               </Button>
             </div>
         </div>

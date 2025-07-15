@@ -53,6 +53,7 @@ import { ArrowRightCircle } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import useSWRInfinite from 'swr/infinite';
 import { motion } from 'framer-motion';
+import { useGT, T, Num, Var, Branch } from 'gt-next';
 
 type GroupedDocuments = {
   today: Document[];
@@ -156,7 +157,7 @@ const PureDocumentItem = ({
               onSelect={() => onDelete(document.id)}
             >
               <TrashIcon />
-              <span>Delete</span>
+              <T><span>Delete</span></T>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -175,6 +176,7 @@ export const DocumentItem = memo(PureDocumentItem, (prevProps, nextProps) => {
 });
 
 export function SidebarDocuments({ user }: { user: User | undefined }) {
+  const t = useGT();
   const { setOpenMobile } = useSidebar();
   const router = useRouter();
   const { setArtifact } = useArtifact();
@@ -385,10 +387,10 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
       setSelectedDocuments(new Set());
       setIsSelectionMode(false);
       
-      toast.success(`${selectedDocumentIds.length} documents deleted`);
+      toast.success(t('{count} documents deleted', { count: selectedDocumentIds.length }));
     } catch (error) {
       console.error('[SidebarDocuments] Error deleting multiple documents:', error);
-      toast.error('Failed to delete some documents');
+      toast.error(t('Failed to delete some documents'));
       
       mutate();
     }
@@ -427,7 +429,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
 
     } catch (error) {
       console.error('[SidebarDocuments] Error selecting document:', error);
-      toast.error('Failed to load document');
+      toast.error(t('Failed to load document'));
       setArtifact((curr: any) => ({ ...curr, status: 'idle' }));
     }
   }, [documents, setArtifact, router, setOpenMobile, activeDocumentId]);
@@ -478,7 +480,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
     return (
       <SidebarGroup>
         <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
-          Loading...
+          <T>Loading...</T>
         </div>
         <SidebarGroupContent>
           <div className="flex flex-col">
@@ -528,7 +530,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
         </div>
         <SidebarGroupContent>
           <div className="px-2 text-zinc-500 w-full flex flex-row justify-center items-center text-sm gap-2 py-4">
-            No documents yet
+            <T>No documents yet</T>
           </div>
         </SidebarGroupContent>
       </SidebarGroup>
@@ -542,7 +544,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
           className="px-2 py-1 text-xs text-sidebar-foreground/50 flex items-center justify-between cursor-pointer"
           onClick={() => setIsExpanded(!isExpanded)}
         >
-          <span>Documents {documents && documents.length > 0 && `(${documents.length})`}</span>
+          <T><span>Documents <Var>{documents && documents.length > 0 && `(${documents.length})`}</Var></span></T>
           <div className="flex items-center">
             <Button 
               variant="ghost" 
@@ -584,7 +586,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
           <>
             <div className="px-2 mt-1 mb-2">
               <Input
-                placeholder="Search documents..."
+                placeholder={t('Search documents...')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="h-7 text-xs border border-r bg-sidebar-accent"
@@ -600,7 +602,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                     onClick={handleToggleSelectionMode}
                     className="h-7 text-xs px-1"
                   >
-                    Select
+                    <T>Select</T>
                   </Button>
                 )}
                 {isSelectionMode && (
@@ -611,7 +613,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                       onClick={handleSelectAll}
                       className="h-7 text-xs px-1"
                     >
-                      {selectedDocuments.size === filteredDocuments.length ? 'Deselect All' : 'Select All'}
+                      <T><Branch branch={selectedDocuments.size === filteredDocuments.length} true="Deselect All" false="Select All" /></T>
                     </Button>
                     <Button
                       variant="destructive"
@@ -620,7 +622,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                       disabled={selectedDocuments.size === 0}
                       className="h-7 text-xs px-1"
                     >
-                      Delete ({selectedDocuments.size})
+                      <T>Delete (<Var>{selectedDocuments.size}</Var>)</T>
                     </Button>
                     <Button
                       variant="ghost"
@@ -628,7 +630,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                       onClick={handleToggleSelectionMode}
                       className="h-7 text-xs px-1"
                     >
-                      Cancel
+                      <T>Cancel</T>
                     </Button>
                   </>
                 )}
@@ -640,7 +642,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                 {searchTerm.trim() ? (
                   filteredDocuments.length === 0 ? (
                     <div className="px-2 text-zinc-500 text-sm text-center py-4">
-                      No documents found matching &quot;{searchTerm}&quot;
+                      <T>No documents found matching "<Var>{searchTerm}</Var>"</T>
                     </div>
                   ) : (
                     filteredDocuments.map((doc) => (
@@ -668,7 +670,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                         {groupedDocuments.today.length > 0 && (
                           <>
                             <div className="px-2 py-1 text-xs text-sidebar-foreground/50">
-                              Today
+                              <T>Today</T>
                             </div>
                             {groupedDocuments.today.map((doc) => (
                               <DocumentItem
@@ -692,7 +694,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                         {groupedDocuments.yesterday.length > 0 && (
                           <>
                             <div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-4">
-                              Yesterday
+                              <T>Yesterday</T>
                             </div>
                             {groupedDocuments.yesterday.map((doc) => (
                               <DocumentItem
@@ -716,7 +718,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                         {groupedDocuments.lastWeek.length > 0 && (
                           <>
                             <div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-4">
-                              Last 7 days
+                              <T>Last 7 days</T>
                             </div>
                             {groupedDocuments.lastWeek.map((doc) => (
                               <DocumentItem
@@ -740,7 +742,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                         {groupedDocuments.lastMonth.length > 0 && (
                           <>
                             <div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-4">
-                              Last 30 days
+                              <T>Last 30 days</T>
                             </div>
                             {groupedDocuments.lastMonth.map((doc) => (
                               <DocumentItem
@@ -764,7 +766,7 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
                         {groupedDocuments.older.length > 0 && (
                           <>
                             <div className="px-2 py-1 text-xs text-sidebar-foreground/50 mt-4">
-                              Older
+                              <T>Older</T>
                             </div>
                             {groupedDocuments.older.map((doc) => (
                               <DocumentItem
@@ -797,17 +799,17 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete document?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <T><AlertDialogTitle>Delete document?</AlertDialogTitle></T>
+            <T><AlertDialogDescription>
               This action cannot be undone. This will permanently delete your
               document and remove it from our servers.
-            </AlertDialogDescription>
+            </AlertDialogDescription></T>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
+            <T><AlertDialogCancel>Cancel</AlertDialogCancel></T>
+            <T><AlertDialogAction onClick={handleDelete}>
               Delete
-            </AlertDialogAction>
+            </AlertDialogAction></T>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -815,20 +817,20 @@ export function SidebarDocuments({ user }: { user: User | undefined }) {
       <AlertDialog open={showMultiDeleteDialog} onOpenChange={setShowMultiDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {selectedDocuments.size} documents?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <T><AlertDialogTitle>Delete <Var>{selectedDocuments.size}</Var> documents?</AlertDialogTitle></T>
+            <T><AlertDialogDescription>
               This action cannot be undone. This will permanently delete the selected
               documents and remove them from our servers.
-            </AlertDialogDescription>
+            </AlertDialogDescription></T>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <T><AlertDialogCancel>Cancel</AlertDialogCancel></T>
+            <T><AlertDialogAction 
               onClick={handleDeleteMultiple}
               className="bg-destructive hover:bg-destructive/90"
             >
-              Delete {selectedDocuments.size} documents
-            </AlertDialogAction>
+              Delete <Var>{selectedDocuments.size}</Var> documents
+            </AlertDialogAction></T>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

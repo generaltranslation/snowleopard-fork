@@ -40,17 +40,20 @@ export function buildArtifactsPrompt(
   return prompt;
 }
 
-export const regularPrompt =
-  'You are a friendly assistant. Keep your responses concise and helpful.';
+export const getRegularPrompt = (t: (content: string) => string) =>
+  t('You are a friendly assistant. Keep your responses concise and helpful.');
 
 export const systemPrompt = ({
   selectedChatModel,
   availableTools = ['createDocument', 'streamingDocument', 'updateDocument', 'webSearch'],
+  t,
 }: {
   selectedChatModel: string;
   availableTools?: Array<'createDocument' | 'streamingDocument' | 'updateDocument' | 'webSearch'>;
+  t: (content: string) => string;
 }) => {
   const artifactsText = buildArtifactsPrompt(availableTools);
+  const regularPrompt = getRegularPrompt(t);
   return `${regularPrompt}
 
 ${artifactsText}
@@ -61,9 +64,10 @@ ${documentAwarenessPrompt}`;
 export const updateDocumentPrompt = (
   currentContent: string | null,
   type: ArtifactKind,
+  t: (content: string) => string,
 ) =>
   type === 'text'
-    ? `Improve the following document content based on the given prompt:
+    ? `${t('Improve the following document content based on the given prompt:')}
 
 ${currentContent}`
     : '';

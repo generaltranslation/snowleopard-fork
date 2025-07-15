@@ -9,6 +9,7 @@ import type {
 } from 'ai';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { getGT } from 'gt-next/server';
 
 import type { Message as DBMessage, Document } from '@snow-leopard/db';
 
@@ -25,8 +26,9 @@ export const fetcher = async (url: string) => {
   const res = await fetch(url);
 
   if (!res.ok) {
+    const t = await getGT();
     const error = new Error(
-      'An error occurred while fetching the data.',
+      t('An error occurred while fetching the data.'),
     ) as ApplicationError;
 
     error.info = await res.json();
