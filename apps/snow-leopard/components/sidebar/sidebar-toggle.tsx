@@ -9,6 +9,7 @@ import {
 
 import { SidebarLeftIcon } from '../icons';
 import { Button } from '../ui/button';
+import { T } from 'gt-next';
 
 export function SidebarToggle({
   className,
@@ -26,7 +27,7 @@ export function SidebarToggle({
           <SidebarLeftIcon size={16} />
         </Button>
       </TooltipTrigger>
-      <TooltipContent align="start">Toggle Sidebar</TooltipContent>
+      <TooltipContent align="start"><T>Toggle Sidebar</T></TooltipContent>
     </Tooltip>
   );
 }

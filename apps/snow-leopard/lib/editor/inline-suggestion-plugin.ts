@@ -1,5 +1,6 @@
 import { Plugin, PluginKey, EditorState, Transaction } from 'prosemirror-state';
 import { Decoration, DecorationSet, EditorView } from 'prosemirror-view';
+import { useGT } from 'gt-next';
 
 export interface InlineSuggestionState {
   suggestionText: string | null;
@@ -21,6 +22,7 @@ export const CLEAR_SUGGESTION = 'clearSuggestion';
 export const FINISH_SUGGESTION_LOADING = 'finishSuggestionLoading';
 
 export function inlineSuggestionPlugin(options: { requestSuggestion: (state: EditorState) => void }): Plugin<InlineSuggestionState> {
+  const t = useGT();
   return new Plugin<InlineSuggestionState>({
     key: inlineSuggestionPluginKey,
     state: {
@@ -112,7 +114,7 @@ export function inlineSuggestionPlugin(options: { requestSuggestion: (state: Edi
               const kbd = document.createElement('kbd');
               kbd.className = 'inline-tab-icon';
               kbd.style.marginLeft = '0.25em';
-              kbd.textContent = 'Tab';
+              kbd.textContent = t('Tab');
               wrapper.appendChild(kbd);
 
               return wrapper;

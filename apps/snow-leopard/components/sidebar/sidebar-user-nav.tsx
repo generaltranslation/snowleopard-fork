@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Paywall } from '@/components/paywall';
+import { useGT, T, Branch } from 'gt-next';
 
 type Subscription = {
   id: string;
@@ -52,6 +53,7 @@ function formatPlanName(planName: string | undefined | null): string {
 }
 
 export function SidebarUserNav({ user }: { user: User | null }) {
+  const t = useGT();
   const { setTheme, theme } = useTheme();
   const router = useRouter();
 
@@ -125,7 +127,7 @@ export function SidebarUserNav({ user }: { user: User | null }) {
           console.error('Error signing out:', ctx.error);
           toast({
             type: 'error',
-            description: ctx.error.message || 'Failed to sign out.'
+            description: ctx.error.message || t('Failed to sign out.')
           });
       }
     });
@@ -141,7 +143,7 @@ export function SidebarUserNav({ user }: { user: User | null }) {
       if (cancelError) throw new Error(cancelError.message || 'Failed to redirect to billing portal.');
     } catch (err: any) {
       console.error("handleManageBilling error:", err);
-      toast({ type: 'error', description: err.message || 'Could not open billing portal.' });
+      toast({ type: 'error', description: err.message || t('Could not open billing portal.') });
       setIsBillingLoading(false);
     }
   };
@@ -150,18 +152,18 @@ export function SidebarUserNav({ user }: { user: User | null }) {
     return null;
   }
 
-  let statusText = 'No active plan';
-  let planName = 'Free';
-  let ctaText = 'Subscribe';
+  let statusText = t('No active plan');
+  let planName = t('Free');
+  let ctaText = t('Subscribe');
   let ctaAction = () => setIsPaywallOpen(true);
   let ctaLoading = isSubscriptionLoading;
 
   if (isSubscriptionLoading) {
-    statusText = 'Loading...';
-    planName = 'Checking';
+    statusText = t('Loading...');
+    planName = t('Checking');
   } else if (subscriptionError) {
-    statusText = 'Error loading status';
-    planName = 'Error';
+    statusText = t('Error loading status');
+    planName = t('Error');
   } else if (subscription) {
     planName = formatPlanName(subscription.plan);
     const now = new Date();
@@ -169,23 +171,23 @@ export function SidebarUserNav({ user }: { user: User | null }) {
       const trialEndDate = subscription.trialEnd || subscription.periodEnd;
       const ends = new Date(trialEndDate || '').getTime();
       if (ends > now.getTime()) {
-        statusText = `Trial ends ${formatDate(trialEndDate)}`;
-        ctaText = 'Upgrade';
+        statusText = t('Trial ends {date}', { date: formatDate(trialEndDate) });
+        ctaText = t('Upgrade');
         ctaAction = () => setIsPaywallOpen(true);
         ctaLoading = isSubscriptionLoading;
       } else {
-        statusText = `Trial ended ${formatDate(trialEndDate)}`;
-        ctaText = 'Subscribe';
+        statusText = t('Trial ended {date}', { date: formatDate(trialEndDate) });
+        ctaText = t('Subscribe');
         ctaAction = () => setIsPaywallOpen(true);
         ctaLoading = isSubscriptionLoading;
       }
     } else if (subscription.status === 'active') {
       if (subscription.cancelAtPeriodEnd) {
-        statusText = `Cancels ${formatDate(subscription.periodEnd)}`;
+        statusText = t('Cancels {date}', { date: formatDate(subscription.periodEnd) });
       } else {
-        statusText = `Renews ${formatDate(subscription.periodEnd)}`;
+        statusText = t('Renews {date}', { date: formatDate(subscription.periodEnd) });
       }
-      ctaText = 'Manage';
+      ctaText = t('Manage');
       ctaAction = handleManageBilling;
       ctaLoading = isBillingLoading;
     }
@@ -207,9 +209,9 @@ export function SidebarUserNav({ user }: { user: User | null }) {
             <DropdownMenuContent side="top" className="w-[--radix-popper-anchor-width]">
               {isStripeEnabled && (
                 <>
-                  <DropdownMenuLabel className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                  <T><DropdownMenuLabel className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
                     Subscription
-                  </DropdownMenuLabel>
+                  </DropdownMenuLabel></T>
                   <div className="px-2 py-1.5 text-sm space-y-1">
                     <p className="font-medium">{planName}</p>
                     <p className="text-xs text-muted-foreground">{statusText}</p>
@@ -229,7 +231,7 @@ export function SidebarUserNav({ user }: { user: User | null }) {
                 onSelect={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 disabled={isLoading}
               >
-                {`Toggle ${theme === 'light' ? 'dark' : 'light'} mode`}
+                <T>Toggle <Branch branch={theme === 'light'} true="dark" false="light" /> mode</T>
               </DropdownMenuItem>
               {!isStripeEnabled && <DropdownMenuSeparator />}
 
@@ -239,9 +241,9 @@ export function SidebarUserNav({ user }: { user: User | null }) {
                 disabled={isLoading}
               >
                 {isSignOutLoading ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing out...</>
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> <T>Signing out...</T></>
                 ) : (
-                   'Sign out'
+                   <T>Sign out</T>
                 )}
               </DropdownMenuItem>
             </DropdownMenuContent>

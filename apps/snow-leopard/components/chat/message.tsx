@@ -14,6 +14,7 @@ import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { MessageReasoning } from './message-reasoning';
 import Image from 'next/image';
+import { T, useGT, Var } from 'gt-next';
 
 function formatMessageWithMentions(content: string) {
   if (!content) return content;
@@ -78,6 +79,7 @@ const PurePreviewMessage = ({
   isReadonly: boolean;
 }) => {
   console.log('[PreviewMessage] Rendering message:', message);
+  const t = useGT();
 
   return (
     <AnimatePresence>
@@ -98,7 +100,7 @@ const PurePreviewMessage = ({
             <div className="size-8 flex items-center justify-center rounded-full ring-1 shrink-0 ring-border bg-background overflow-hidden relative">
               <Image
                 src="/images/leopardprintbw.svg"
-                alt="Snow Leopard"
+                alt={t('Snow Leopard')}
                 fill
                 className="object-cover dark:invert"
                 style={{ transform: 'scale(2.5)' }}
@@ -128,9 +130,11 @@ const PurePreviewMessage = ({
                   {typeof message.content === 'string' ? (
                     <Markdown>{formatMessageWithMentions(message.content)}</Markdown>
                   ) : (
-                    <pre className="text-sm text-red-500">
-                      Error: Invalid message content format
-                    </pre>
+                    <T>
+                      <pre className="text-sm text-red-500">
+                        Error: Invalid message content format
+                      </pre>
+                    </T>
                   )}
                 </div>
               </div>
@@ -184,7 +188,9 @@ const PurePreviewMessage = ({
                   if (state === 'call' && toolName === 'webSearch') {
                     return (
                       <div key={toolCallId} className="bg-background border rounded-xl w-full max-w-md p-3 text-sm animate-pulse">
-                        Searching web for &quot;{(args as any).query}&quot;...
+                        <T>
+                          Searching web for "<Var>{(args as any).query}</Var>"...
+                        </T>
                       </div>
                     );
                   }
@@ -282,7 +288,7 @@ export const ThinkingMessage = () => {
         <div className="size-8 flex items-center justify-center rounded-full ring-1 shrink-0 ring-border overflow-hidden relative">
           <Image
             src="/images/leopardprintbw.svg"
-            alt="Snow Leopard"
+            alt={useGT()('Snow Leopard')}
             fill
             className="object-cover dark:invert"
             style={{ transform: 'scale(2.5)' }}
@@ -291,7 +297,7 @@ export const ThinkingMessage = () => {
 
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
-            Thinking...
+            <T>Thinking...</T>
           </div>
         </div>
       </div>
@@ -305,9 +311,11 @@ function WebSearchResult({ query, results }: { query: string; results: any[] }) 
   return (
     <div className="bg-background border rounded-xl w-full max-w-md p-4 text-sm">
       <div className="flex items-center justify-between">
-        <span>Search completed for &quot;{query}&quot;</span>
+        <T>
+          <span>Search completed for "<Var>{query}</Var>"</span>
+        </T>
         <button onClick={() => setOpen(!open)} className="text-blue-600 hover:underline">
-          {open ? 'Hide sources' : `View ${results.length} sources`}
+          {open ? useGT()('Hide sources') : useGT()('View {count} sources', { count: results.length })}
         </button>
       </div>
       {open && (

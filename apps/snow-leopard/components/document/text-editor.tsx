@@ -15,6 +15,7 @@ import {
 
 import { setActiveEditorView } from "@/lib/editor/editor-state";
 import { useAiOptions, useAiOptionsValue } from "@/hooks/ai-options";
+import { useGT } from "gt-next";
 
 import {
   inlineSuggestionPlugin,
@@ -93,6 +94,7 @@ function PureEditor({
   onStatusChange,
   onCreateDocumentRequest,
 }: EditorProps) {
+  const t = useGT();
   const containerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<EditorView | null>(null);
   const currentDocumentIdRef = useRef(documentId);
@@ -282,7 +284,7 @@ function PureEditor({
             "[Editor Component] Error fetching inline suggestion:",
             error
           );
-          toast.error(`Suggestion error: ${error.message}`);
+          toast.error(t('Suggestion error: {error}', { error: error.message }));
           if (editorRef.current) {
             editorRef.current.dispatch(
               editorRef.current.state.tr.setMeta(CLEAR_SUGGESTION, true)
@@ -304,7 +306,7 @@ function PureEditor({
       const plugins = [
         creationStreamingPlugin(documentId),
         placeholderPlugin(
-          documentId === "init" ? "Start typing" : "Start typing..."
+          documentId === "init" ? t("Start typing") : t("Start typing...")
         ),
         ...exampleSetup({ schema: documentSchema, menuBar: false }),
         inputRules({
@@ -413,7 +415,7 @@ function PureEditor({
         const newPlugins = [
           creationStreamingPlugin(documentId),
           placeholderPlugin(
-            documentId === "init" ? "Start typing" : "Start typing..."
+            documentId === "init" ? t("Start typing") : t("Start typing...")
           ),
           ...exampleSetup({ schema: documentSchema, menuBar: false }),
           inputRules({
@@ -534,7 +536,7 @@ function PureEditor({
         console.error(
           `[Editor apply-suggestion] Invalid range received: [${from}, ${to}]. Document size: ${state.doc.content.size}`
         );
-        toast.error("Cannot apply suggestion: Invalid text range.");
+        toast.error(t("Cannot apply suggestion: Invalid text range."));
         return;
       }
 
@@ -554,13 +556,13 @@ function PureEditor({
 
         dispatch(transaction);
 
-        toast.success("Suggestion applied");
+        toast.success(t("Suggestion applied"));
       } catch (error) {
         console.error(
           `[Editor apply-suggestion] Error applying transaction:`,
           error
         );
-        toast.error("Failed to apply suggestion.");
+        toast.error(t("Failed to apply suggestion."));
       }
     };
 

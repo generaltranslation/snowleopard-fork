@@ -32,6 +32,7 @@ import equal from 'fast-deep-equal';
 import { UseChatHelpers, UseChatOptions } from '@ai-sdk/react';
 import { useDocumentContext } from '@/hooks/use-document-context';
 import { cn, generateUUID } from '@/lib/utils';
+import { useGT } from 'gt-next';
 
 interface DocumentSuggestion extends SuggestionDataItem {
   id: string;
@@ -154,6 +155,7 @@ function PureMultimodalInput({
   const mentionInputRef = useRef<any>(null);
   const { width } = useWindowSize();
   const { documentId: activeDocumentId, documentTitle: activeDocumentTitle } = useDocumentContext();
+  const t = useGT();
   
   const [fileSuggestions, setFileSuggestions] = useState<DocumentSuggestion[]>([]);
   const [isSuggestionLoading, setIsSuggestionLoading] = useState(false);
@@ -291,7 +293,7 @@ function PureMultimodalInput({
       const { error } = await response.json();
       toast.error(error);
     } catch (error) {
-      toast.error('Failed to upload file, please try again!');
+      toast.error(t('Failed to upload file, please try again!'));
     }
   };
 
@@ -350,7 +352,7 @@ function PureMultimodalInput({
       if (status === 'ready' && inputValue.trim() !== '') {
         submitForm();
       } else if (status !== 'ready') {
-         toast.error('Please wait for the model to finish its response!');
+         toast.error(t('Please wait for the model to finish its response!'));
       }
     }
   };
@@ -379,13 +381,13 @@ function PureMultimodalInput({
           style={mentionInputStyle} 
           value={inputValue}
           onChange={handleInputChange}
-          placeholder="Send a message... (type @ to mention documents)"
+          placeholder={t('Send a message... (type @ to mention documents)')}
           allowSpaceInQuery
           className={cx(className)} 
           classNames={{
             input: 'placeholder:text-muted-foreground',
           }}
-          a11ySuggestionsListLabel={"Suggested documents for mention"}
+          a11ySuggestionsListLabel={t('Suggested documents for mention')}
           singleLine={false}
         >
           <Mention
